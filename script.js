@@ -1,5 +1,9 @@
 // 初始化 Socket
-const socket = io();
+// ↓↓ 請將這裡換成您終端機上看到的完整 https 網址 ↓↓
+const BACKEND_URL = "https://6ca5-61-230-11-72.ngrok-free.app"; 
+// ↑↑ 例如: "https://3065-61-230-11-72.ngrok-free.app" (請務必檢查並修改)
+
+const socket = io(BACKEND_URL); 
 let myRoomId = null;
 let myRole = null;
 
@@ -61,5 +65,3 @@ socket.on('opponent_answer', (data) => {
     const log = document.getElementById('battle-log');
     log.innerHTML += `<p>對手猜測: ${data.answer} (結果: ${data.isCorrect ? '正確' : '錯誤'})</p>`;
 });
-
-// ...existing code...

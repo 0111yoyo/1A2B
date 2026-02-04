@@ -5,7 +5,14 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// 修改這裡：加入 cors 設定
+const io = new Server(server, {
+    cors: {
+        origin: "*",  // 允許所有來源連線 (包含 GitHub Pages)
+        methods: ["GET", "POST"]
+    }
+});
 
 // 託管靜態檔案
 app.use(express.static(path.join(__dirname, '/')));
@@ -14,13 +21,16 @@ app.use(express.static(path.join(__dirname, '/')));
 let waitingPlayer = null;
 
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    console.log('✅ 有使用者連線了:', socket.id);
 
     // 處理配對邏輯
     socket.on('find_match', () => {
+        console.log(`🔎 使用者 ${socket.id} 正在尋找對手...`);
         if (waitingPlayer) {
             // 配對成功
             const roomId = waitingPlayer.id + '#' + socket.id;
+            console.log(`🎉 配對成功！房間 ID: ${roomId}`);
+            
             const opponent = waitingPlayer;
             waitingPlayer = null;
 
@@ -35,6 +45,7 @@ io.on('connection', (socket) => {
             opponent.emit('role_assigned', 'player1');
         } else {
             // 等待對手
+            console.log(`⏳ 使用者 ${socket.id} 加入等待佇列`);
             waitingPlayer = socket;
             socket.emit('waiting_for_opponent');
         }
@@ -42,6 +53,7 @@ io.on('connection', (socket) => {
 
     // 處理出題
     socket.on('send_question', (data) => {
+        console.log(`📩 收到題目 (房間 ${data.roomId}): ${data.question}`);
         // data 包含 roomId 和 questionContent
         socket.to(data.roomId).emit('receive_question', {
             question: data.question
@@ -50,6 +62,7 @@ io.on('connection', (socket) => {
 
     // 處理回答 (這裡僅轉發結果，具體判定可在前端或後端做)
     socket.on('send_answer', (data) => {
+        console.log(`🤔 收到回答 (房間 ${data.roomId}): ${data.answer} (結果: ${data.isCorrect})`);
         socket.to(data.roomId).emit('opponent_answer', {
             answer: data.answer,
             isCorrect: data.isCorrect // 假設前端判定完傳過來，或後端判定
@@ -57,7 +70,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
+        console.log('❌ 使用者斷線:', socket.id);
         if (waitingPlayer === socket) {
             waitingPlayer = null;
         }
