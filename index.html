@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-tw">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
@@ -7,7 +7,7 @@
     <script src="https://kit.fontawesome.com/5223ebc999.js" crossorigin="anonymous"></script>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1A2B遊戲</title>
+    <title>1A2B 對戰版</title>
     <link rel="shortcut icon" href="https://i.ibb.co/vJ42VtN/ia2b-001.png" type="image/x-icon" />
     <meta name="1A2B" content="訓練邏輯與耐心的好遊戲！">
     <meta property="og:title" content="1A2B遊戲" />
@@ -49,6 +49,27 @@
         <span class="ex2">例：答案為8745時，猜8704，顯示2A1B。</span>
         <p class="3">③ 挑戰者有10次挑戰機會，來挑戰看看吧！</p>
     </div>
+
+    <div id="battle-controls">
+        <h3>線上對戰模式</h3>
+        <div id="status">未連線</div>
+
+        <!-- 配對按鈕 -->
+        <button id="btn-find-match">尋找對手</button>
+
+        <!-- 出題區域 (配對成功後顯示) -->
+        <div id="question-area" style="display:none;">
+            <h4>給對手出題:</h4>
+            <input type="text" id="my-question" placeholder="輸入4位數字" maxlength="4">
+            <button id="btn-send-question">送出題目</button>
+        </div>
+
+        <!-- 對戰訊息 -->
+        <div id="battle-log"></div>
+    </div>
+
+    <!-- 引入 Socket.io 客戶端 -->
+    <script src="/socket.io/socket.io.js"></script>
 </body>
 <script src="./script/setting.js"></script>
 <script>
